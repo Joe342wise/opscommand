@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
@@ -15,9 +16,7 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::prefix('dashboard')->name('dashboard.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('activities', ActivityController::class)->except(['edit', 'update']);
     Route::put('activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
