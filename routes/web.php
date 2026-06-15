@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -20,9 +21,9 @@ Route::middleware('auth')->group(function () {
     Route::put('activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
     Route::post('activities/{activity}/remark', [ActivityController::class, 'addRemark'])->name('activities.remark');
 
-    Route::prefix('incidents')->name('incidents.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::resource('incidents', IncidentController::class)->except(['edit']);
+    Route::post('incidents/{incident}/note', [IncidentController::class, 'addNote'])->name('incidents.note');
+    Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
 
     Route::prefix('escalations')->name('escalations.')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
