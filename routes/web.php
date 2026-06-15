@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,9 +16,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
     });
 
-    Route::prefix('activities')->name('activities.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::resource('activities', ActivityController::class)->except(['edit', 'update']);
+    Route::put('activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
+    Route::post('activities/{activity}/remark', [ActivityController::class, 'addRemark'])->name('activities.remark');
 
     Route::prefix('incidents')->name('incidents.')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
