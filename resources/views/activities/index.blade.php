@@ -1,104 +1,172 @@
 <x-layouts.app title="Activities - OpsCommand">
-    <div class="max-w-[1600px]">
-        <div class="flex items-center justify-between mb-6">
+    <!-- Page Header & Controls -->
+    <div class="flex flex-col gap-4">
+        <div class="flex justify-between items-start">
             <div>
-                <h1 class="text-xl font-semibold text-on-surface">Activities</h1>
-                <p class="text-sm text-outline mt-0.5">Manage operational activities</p>
+                <div class="flex items-center gap-2 mb-1">
+                    <span class="text-on-surface-variant font-mono-data text-mono-data">PROJECTS / OPS-2024 /</span>
+                    <span class="text-primary font-mono-data text-mono-data">ACTIVITIES</span>
+                </div>
+                <h2 class="font-headline-lg text-headline-lg text-on-surface">Activity Management</h2>
             </div>
-            <a href="{{ route('activities.create') }}"
-               class="px-4 py-2 bg-primary-container text-on-primary-container rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-                New Activity
-            </a>
+            <div class="flex flex-col items-end gap-3">
+                <a href="{{ route('activities.create') }}" class="flex items-center gap-2 bg-primary-container text-on-primary-container px-4 py-2 rounded-lg font-bold hover:opacity-90 transition-all active:scale-95 shadow-lg shadow-indigo-500/10">
+                    <span class="material-symbols-outlined fill-icon">add</span>
+                    <span class="font-body-sm text-body-sm">New Activity</span>
+                </a>
+                <!-- Quick Templates -->
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Templates:</span>
+                    <div class="flex gap-1.5 overflow-x-auto pb-1 max-w-[600px] custom-scrollbar">
+                        <button class="template-button flex items-center gap-1.5 px-2.5 py-1 rounded border border-surface-variant text-[11px] font-bold text-on-surface-variant whitespace-nowrap transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[14px]">sms</span> SMS Verify
+                        </button>
+                        <button class="template-button flex items-center gap-1.5 px-2.5 py-1 rounded border border-surface-variant text-[11px] font-bold text-on-surface-variant whitespace-nowrap transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[14px]">payments</span> Settlement
+                        </button>
+                        <button class="template-button flex items-center gap-1.5 px-2.5 py-1 rounded border border-surface-variant text-[11px] font-bold text-on-surface-variant whitespace-nowrap transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[14px]">backup</span> Backup Verify
+                        </button>
+                        <button class="template-button flex items-center gap-1.5 px-2.5 py-1 rounded border border-surface-variant text-[11px] font-bold text-on-surface-variant whitespace-nowrap transition-all active:scale-95">
+                            <span class="material-symbols-outlined text-[14px]">health_and_safety</span> API Health
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="bg-surface-container rounded-xl border border-outline-variant overflow-hidden">
-            <div class="p-4 border-b border-outline-variant">
-                <form method="GET" class="flex gap-3">
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Search activities..."
-                           class="flex-1 px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary">
-                    <select name="status" class="px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
-                        <option value="">All Status</option>
-                        <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                        <option value="escalated" {{ request('status') === 'escalated' ? 'selected' : '' }}>Escalated</option>
-                        <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
-                        <option value="cancelled" {{ request('status') === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                    </select>
-                    <select name="priority" class="px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
-                        <option value="">All Priority</option>
-                        <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Low</option>
-                        <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>Medium</option>
-                        <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>High</option>
-                        <option value="critical" {{ request('priority') === 'critical' ? 'selected' : '' }}>Critical</option>
-                    </select>
-                    <button type="submit" class="px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-highest transition-colors">
-                        Filter
-                    </button>
+        <!-- Filter Bar -->
+        <div class="flex items-center justify-between py-2 border-b border-surface-variant/30">
+            <div class="flex items-center gap-2">
+                <form method="GET" class="flex items-center gap-2">
+                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container-high border border-surface-variant text-on-surface-variant cursor-pointer hover:border-outline transition-all">
+                        <span class="material-symbols-outlined text-[14px]">filter_list</span>
+                        <select name="status" class="bg-transparent border-none text-[11px] font-bold uppercase tracking-wider text-on-surface-variant focus:ring-0 p-0">
+                            <option value="">Status: All</option>
+                            <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="in_progress" {{ request('status') === 'in_progress' ? 'selected' : '' }}>In Progress</option>
+                            <option value="completed" {{ request('status') === 'completed' ? 'selected' : '' }}>Completed</option>
+                            <option value="escalated" {{ request('status') === 'escalated' ? 'selected' : '' }}>Escalated</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2 py-1 rounded bg-surface-container-high border border-surface-variant text-on-surface-variant cursor-pointer hover:border-outline transition-all">
+                        <span class="material-symbols-outlined text-[14px]">person</span>
+                        <select name="priority" class="bg-transparent border-none text-[11px] font-bold uppercase tracking-wider text-on-surface-variant focus:ring-0 p-0">
+                            <option value="">Priority: All</option>
+                            <option value="critical" {{ request('priority') === 'critical' ? 'selected' : '' }}>Critical</option>
+                            <option value="high" {{ request('priority') === 'high' ? 'selected' : '' }}>High</option>
+                            <option value="medium" {{ request('priority') === 'medium' ? 'selected' : '' }}>Medium</option>
+                            <option value="low" {{ request('priority') === 'low' ? 'selected' : '' }}>Low</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="text-on-surface-variant hover:text-primary transition-colors font-label-caps text-label-caps">Apply</button>
+                    @if (request()->hasAny(['status', 'priority']))
+                        <a href="{{ route('activities.index') }}" class="text-on-surface-variant hover:text-danger-rose transition-colors font-label-caps text-label-caps">Clear Filters</a>
+                    @endif
                 </form>
             </div>
+            <div class="flex items-center gap-4">
+                <span class="text-[10px] font-mono-data text-on-surface-variant italic">{{ $activities->total() }} activities</span>
+            </div>
+        </div>
+    </div>
 
-            <table class="w-full">
+    <!-- High-Density Data Table -->
+    <div class="bg-surface-container-low rounded-xl border border-surface-variant overflow-hidden flex flex-col shadow-2xl">
+        <div class="overflow-x-auto custom-scrollbar flex-1">
+            <table class="w-full border-collapse">
                 <thead>
-                    <tr class="border-b border-outline-variant">
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Title</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Priority</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Status</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Owner</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Due Date</th>
-                        <th class="text-left px-4 py-3 text-xs font-semibold text-outline uppercase tracking-wider">Created</th>
+                    <tr class="bg-surface-container-high text-on-surface-variant uppercase tracking-wider text-left sticky top-0 z-10">
+                        <th class="w-12 px-4 py-3"><input class="rounded bg-slate-900 border-slate-700 text-primary-container focus:ring-primary-container" type="checkbox"/></th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps min-w-[300px]">Activity</th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps">Priority</th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps">Status</th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps">Assignee</th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps">Due Date</th>
+                        <th class="px-4 py-3 font-label-caps text-label-caps">Created</th>
+                        <th class="px-4 py-3 w-10"></th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="divide-y divide-surface-variant/20">
                     @forelse ($activities as $activity)
-                        <tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
-                            <td class="px-4 py-3">
-                                <a href="{{ route('activities.show', $activity) }}" class="text-sm font-medium text-on-surface hover:text-primary">{{ $activity->title }}</a>
-                                @if($activity->description)
-                                    <p class="text-xs text-outline mt-0.5 truncate max-w-md">{{ $activity->description }}</p>
-                                @endif
+                        <tr class="hover:bg-slate-900/50 transition-colors group cursor-pointer" onclick="window.location='{{ route('activities.show', $activity) }}'">
+                            <td class="px-4 py-2.5" onclick="event.stopPropagation()"><input class="rounded bg-slate-900 border-slate-700 text-primary-container focus:ring-primary-container" type="checkbox"/></td>
+                            <td class="px-4 py-2.5">
+                                <div class="flex items-center gap-3">
+                                    <span class="material-symbols-outlined text-{{ $activity->priority === 'critical' ? 'danger-rose' : ($activity->priority === 'high' ? 'warning-amber' : 'primary') }}">
+                                        {{ $activity->status === 'completed' ? 'check_circle' : ($activity->status === 'escalated' ? 'error_outline' : 'pending') }}
+                                    </span>
+                                    <div class="flex flex-col">
+                                        <span class="text-body-sm font-semibold text-slate-100">{{ $activity->title }}</span>
+                                        <span class="text-mono-data text-slate-400">OPS-{{ str_pad($activity->id, 3, '0', STR_PAD_LEFT) }}</span>
+                                    </div>
+                                </div>
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                            <td class="px-4 py-2.5">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold
                                     {{ match($activity->priority) {
-                                        'critical' => 'bg-danger-rose/20 text-danger-rose',
-                                        'high' => 'bg-warning-amber/20 text-warning-amber',
-                                        'medium' => 'bg-primary-container/20 text-primary',
-                                        'low' => 'bg-success-emerald/20 text-success-emerald',
-                                        default => 'bg-surface-container-high text-outline',
-                                    } }}">
+                                        'critical' => 'bg-danger-rose/10 text-danger-rose border border-danger-rose/20',
+                                        'high' => 'bg-warning-amber/10 text-warning-amber border border-warning-amber/20',
+                                        'medium' => 'bg-primary/10 text-primary border border-primary/20',
+                                        'low' => 'bg-success-emerald/10 text-success-emerald border border-success-emerald/20',
+                                        default => 'bg-surface-container-high text-outline border border-surface-variant',
+                                    } }} uppercase">
                                     {{ ucfirst($activity->priority) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium
+                            <td class="px-4 py-2.5">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold
                                     {{ match($activity->status) {
-                                        'completed' => 'bg-success-emerald/20 text-success-emerald',
-                                        'escalated' => 'bg-danger-rose/20 text-danger-rose',
-                                        'in_progress' => 'bg-primary-container/20 text-primary',
-                                        'pending' => 'bg-warning-amber/20 text-warning-amber',
-                                        'cancelled' => 'bg-surface-container-high text-outline',
-                                        default => 'bg-surface-container-high text-outline',
-                                    } }}">
+                                        'completed' => 'bg-success-emerald/10 text-success-emerald border border-success-emerald/20',
+                                        'escalated' => 'bg-danger-rose/10 text-danger-rose border border-danger-rose/20',
+                                        'in_progress' => 'bg-primary/10 text-primary border border-primary/20',
+                                        'pending' => 'bg-warning-amber/10 text-warning-amber border border-warning-amber/20',
+                                        default => 'bg-surface-container-high text-outline border border-surface-variant',
+                                    } }} uppercase">
                                     {{ ucfirst(str_replace('_', ' ', $activity->status)) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3 text-sm text-on-surface">{{ $activity->owner->name ?? 'Unassigned' }}</td>
-                            <td class="px-4 py-3 text-sm text-outline">{{ $activity->due_at?->format('M d, Y') ?? '—' }}</td>
-                            <td class="px-4 py-3 text-sm text-outline">{{ $activity->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-2.5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-5 h-5 rounded-full bg-slate-800 flex items-center justify-center text-[10px] font-bold text-primary">
+                                        {{ strtoupper(substr($activity->owner->name ?? 'U', 0, 2)) }}
+                                    </div>
+                                    <span class="text-body-sm text-slate-300">{{ $activity->owner->name ?? 'Unassigned' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-2.5 font-mono-data text-slate-400">{{ $activity->due_at?->format('M d, Y') ?? '—' }}</td>
+                            <td class="px-4 py-2.5 font-mono-data text-slate-400">{{ $activity->created_at->format('M d, Y') }}</td>
+                            <td class="px-4 py-2.5 text-right">
+                                <button class="row-hover-action p-1 rounded hover:bg-slate-800 text-on-surface-variant">
+                                    <span class="material-symbols-outlined">more_horiz</span>
+                                </button>
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-12 text-center text-sm text-outline">No activities found.</td>
+                            <td colspan="8" class="px-4 py-12 text-center">
+                                <span class="material-symbols-outlined text-4xl text-outline mb-2">task_alt</span>
+                                <p class="text-sm text-slate-400">No activities found.</p>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
-
-            @if ($activities->hasPages())
-                <div class="p-4 border-t border-outline-variant">
-                    {{ $activities->links() }}
-                </div>
-            @endif
         </div>
+
+        @if ($activities->hasPages())
+            <div class="p-4 border-t border-surface-variant bg-surface-container-high">
+                {{ $activities->links() }}
+            </div>
+        @endif
     </div>
+
+    <style>
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #020617; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #2d3449; border-radius: 2px; }
+        .row-hover-action { opacity: 0; transition: opacity 0.15s ease-in-out; }
+        tr:hover .row-hover-action { opacity: 1; }
+        .template-button:hover { background: rgba(195, 192, 255, 0.1); border-color: rgba(195, 192, 255, 0.4); }
+    </style>
 </x-layouts.app>
