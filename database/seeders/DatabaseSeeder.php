@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             TeamSeeder::class,
             ShiftSeeder::class,
+            ServiceSeeder::class,
         ]);
     }
 }
