@@ -8,6 +8,7 @@ use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -47,9 +48,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/alerts/{alert}/resolve', [NotificationController::class, 'resolveAlert'])->name('alerts.resolve');
     });
 
-    Route::prefix('services')->name('services.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::resource('services', ServiceController::class)->except(['edit']);
+    Route::post('services/{service}/metric', [ServiceController::class, 'addMetric'])->name('services.metric');
 
     Route::prefix('watch-team')->name('watch-team.')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
