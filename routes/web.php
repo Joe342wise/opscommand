@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -35,6 +36,15 @@ Route::middleware('auth')->group(function () {
     Route::prefix('audit')->name('audit.')->group(function () {
         Route::get('/', [AuditController::class, 'index'])->name('index');
         Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
+    });
+
+    Route::prefix('notifications')->name('notifications.')->group(function () {
+        Route::get('/', [NotificationController::class, 'index'])->name('index');
+        Route::post('/{recipient}/read', [NotificationController::class, 'markAsRead'])->name('mark-read');
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('mark-all-read');
+        Route::get('/alerts', [NotificationController::class, 'alerts'])->name('alerts');
+        Route::post('/alerts/{alert}/acknowledge', [NotificationController::class, 'acknowledgeAlert'])->name('alerts.acknowledge');
+        Route::post('/alerts/{alert}/resolve', [NotificationController::class, 'resolveAlert'])->name('alerts.resolve');
     });
 
     Route::prefix('services')->name('services.')->group(function () {
