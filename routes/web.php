@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\IncidentController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,9 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::post('incidents/{incident}/note', [IncidentController::class, 'addNote'])->name('incidents.note');
     Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
 
-    Route::prefix('escalations')->name('escalations.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::resource('escalations', EscalationController::class)->except(['edit']);
 
     Route::prefix('handovers')->name('handovers.')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
