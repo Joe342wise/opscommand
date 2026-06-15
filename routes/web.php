@@ -10,6 +10,7 @@ use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\WatchTeamController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -52,9 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('services', ServiceController::class)->except(['edit']);
     Route::post('services/{service}/metric', [ServiceController::class, 'addMetric'])->name('services.metric');
 
-    Route::prefix('watch-team')->name('watch-team.')->group(function () {
-        Route::get('/', fn () => view('dashboard.index'))->name('index');
-    });
+    Route::get('/watch-team', [WatchTeamController::class, 'index'])->name('watch-team.index');
 
     Route::prefix('reports')->name('reports.')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
