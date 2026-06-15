@@ -10,4 +10,11 @@ Route::middleware('guest')->group(function () {
     Route::get('reset-password/{token}', fn () => view('auth.reset-password'))->name('password.reset');
 });
 
-Route::post('logout', [LoginController::class, 'logout'])->middleware('auth')->name('logout');
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+Route::middleware('guest')->prefix('mfa')->name('mfa.')->group(function () {
+    Route::get('verify', [LoginController::class, 'showMfaForm'])->name('verify');
+    Route::post('verify', [LoginController::class, 'verifyMfa']);
+});
