@@ -1,38 +1,48 @@
-<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container-low border-r border-outline-variant flex flex-col z-40">
-    <div class="p-5 border-b border-outline-variant">
-        <h1 class="text-lg font-semibold text-primary tracking-tight">OpsCommand</h1>
-        <p class="text-xs text-outline mt-0.5">Operations Management</p>
+<aside class="fixed left-0 top-0 h-screen w-64 bg-surface-container-low border-r border-surface-variant flex flex-col py-margin-page gap-stack-gap z-50">
+    <div class="px-6 mb-8 flex items-center gap-3">
+        <div class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-primary text-xl">security</span>
+        </div>
+        <div>
+            <h1 class="font-headline-md text-headline-md font-bold text-primary">OpsCommand</h1>
+            <p class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest opacity-70">NOC Incident Center</p>
+        </div>
     </div>
-    <nav class="flex-1 p-3 space-y-1">
+
+    <nav class="flex-1 px-3 space-y-1">
         @php
             $navItems = [
-                ['route' => 'dashboard.index', 'label' => 'Dashboard', 'icon' => 'dashboard'],
-                ['route' => 'activities.index', 'label' => 'Activities', 'icon' => 'task_alt'],
-                ['route' => 'incidents.index', 'label' => 'Incidents', 'icon' => 'warning'],
-                ['route' => 'escalations.index', 'label' => 'Escalations', 'icon' => 'trending_up'],
+                ['route' => 'dashboard.index', 'label' => 'Active Command', 'icon' => 'dashboard'],
+                ['route' => 'incidents.index', 'label' => 'Incidents', 'icon' => 'emergency'],
                 ['route' => 'handovers.index', 'label' => 'Handover Board', 'icon' => 'swap_horiz'],
-                ['route' => 'services.index', 'label' => 'System Health', 'icon' => 'monitor_heart'],
-                ['route' => 'watch-team.index', 'label' => 'Watch Team', 'icon' => 'group'],
-                ['route' => 'reports.index', 'label' => 'Reports', 'icon' => 'assessment'],
+                ['route' => 'services.index', 'label' => 'System Health', 'icon' => 'analytics'],
+                ['route' => 'watch-team.index', 'label' => 'Watch Team', 'icon' => 'groups'],
             ];
         @endphp
+
         @foreach ($navItems as $item)
             <a href="{{ route($item['route']) }}"
-               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-colors
-                      {{ request()->routeIs($item['route']) ? 'bg-primary-container text-on-primary-container' : 'text-on-surface hover:bg-surface-container' }}">
-                <span class="material-symbols-outlined text-[20px]">{{ $item['icon'] }}</span>
-                {{ $item['label'] }}
+               class="flex items-center gap-3 px-3 py-2.5 transition-all rounded-sm group
+                      {{ request()->routeIs($item['route']) ? 'text-primary font-bold border-r-2 border-primary bg-primary/5' : 'text-on-surface-variant font-medium hover:bg-surface-variant hover:text-on-surface' }}">
+                <span class="material-symbols-outlined {{ request()->routeIs($item['route']) ? 'fill-icon' : 'group-hover:scale-110 transition-transform' }}"
+                      @if(request()->routeIs($item['route'])) style="font-variation-settings: 'FILL' 1;" @endif>
+                    {{ $item['icon'] }}</span>
+                <span class="font-body-sm text-body-sm">{{ $item['label'] }}</span>
             </a>
         @endforeach
     </nav>
-    <div class="p-4 border-t border-outline-variant">
+
+    <div class="mt-auto px-6 py-4 border-t border-surface-variant/30">
         <div class="flex items-center gap-3">
-            <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container text-sm font-semibold">
-                {{ substr(auth()->user()->name ?? 'U', 0, 1) }}
+            <div class="relative">
+                <div class="w-10 h-10 rounded-full border border-surface-variant shadow-lg bg-primary-container flex items-center justify-center text-on-primary-container font-semibold">
+                    {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
+                </div>
+                <div class="absolute bottom-0 right-0 w-3 h-3 bg-success-emerald rounded-full border-2 border-surface-container-low"></div>
             </div>
-            <div class="flex-1 min-w-0">
-                <p class="text-sm font-medium text-on-surface truncate">{{ auth()->user()->name ?? 'User' }}</p>
-                <p class="text-xs text-outline truncate">{{ auth()->user()->role->name ?? 'Role' }}</p>
+            <div class="overflow-hidden">
+                <p class="font-body-sm font-semibold truncate text-on-surface">{{ auth()->user()->name ?? 'User' }}</p>
+                <p class="font-label-caps text-[10px] text-on-surface-variant truncate">{{ auth()->user()->role->name ?? 'Watch Commander' }}</p>
             </div>
         </div>
     </div>
