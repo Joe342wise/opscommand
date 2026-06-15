@@ -1,14 +1,63 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect()->route('dashboard');
+        return redirect()->route('dashboard.index');
     }
     return redirect()->route('login');
 });
 
-Route::middleware('auth')->prefix('dashboard')->name('dashboard.')->group(function () {
-    Route::get('/', fn () => view('dashboard.index'))->name('index');
+Route::middleware('auth')->group(function () {
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('activities')->name('activities.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('incidents')->name('incidents.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('escalations')->name('escalations.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('handovers')->name('handovers.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('services')->name('services.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('watch-team')->name('watch-team.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/', fn () => view('dashboard.index'))->name('index');
+    });
+});
+
+Route::middleware('guest')->group(function () {
+    Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('login', [LoginController::class, 'login']);
+    Route::get('forgot-password', fn () => view('auth.forgot-password'))->name('password.request');
+    Route::post('forgot-password', [LoginController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('reset-password/{token}', [LoginController::class, 'showResetForm'])->name('password.reset');
+    Route::post('reset-password', [LoginController::class, 'reset'])->name('password.update');
+});
+
+Route::middleware('auth')->group(function () {
+    Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+});
+
+Route::middleware('guest')->prefix('mfa')->name('mfa.')->group(function () {
+    Route::get('verify', [LoginController::class, 'showMfaForm'])->name('verify');
+    Route::post('verify', [LoginController::class, 'verifyMfa']);
 });

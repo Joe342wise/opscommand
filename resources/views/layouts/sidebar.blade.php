@@ -6,7 +6,7 @@
     <nav class="flex-1 p-3 space-y-1">
         @php
             $navItems = [
-                ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'dashboard'],
+                ['route' => 'dashboard.index', 'label' => 'Dashboard', 'icon' => 'dashboard'],
                 ['route' => 'activities.index', 'label' => 'Activities', 'icon' => 'task_alt'],
                 ['route' => 'incidents.index', 'label' => 'Incidents', 'icon' => 'warning'],
                 ['route' => 'escalations.index', 'label' => 'Escalations', 'icon' => 'trending_up'],
