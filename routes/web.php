@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AuditController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EscalationController;
@@ -30,6 +31,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('handovers', HandoverController::class)->except(['edit']);
     Route::post('handovers/{handover}/acknowledge', [HandoverController::class, 'acknowledge'])->name('handovers.acknowledge');
+
+    Route::prefix('audit')->name('audit.')->group(function () {
+        Route::get('/', [AuditController::class, 'index'])->name('index');
+        Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
+    });
 
     Route::prefix('services')->name('services.')->group(function () {
         Route::get('/', fn () => view('dashboard.index'))->name('index');
