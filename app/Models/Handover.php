@@ -3,19 +3,23 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Handover extends Model
 {
-    use Auditable;
+    use Auditable, UsesArchivedSoftDeletes;
+
     protected $fillable = [
         'shift_id',
         'created_by',
+        'updated_by',
         'summary',
         'risk_summary',
         'status',
+        'archived_at',
     ];
 
     public function shift(): BelongsTo

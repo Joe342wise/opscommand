@@ -2,25 +2,28 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Department extends Model
 {
-    use SoftDeletes;
+    use UsesArchivedSoftDeletes;
 
     protected $fillable = [
         'name',
         'description',
         'created_by',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'archived_at' => 'datetime',
+        ];
     }
 
     public function teams(): HasMany

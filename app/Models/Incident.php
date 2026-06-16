@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Incident extends Model
 {
-    use Auditable, SoftDeletes;
+    use Auditable, UsesArchivedSoftDeletes;
 
     protected $fillable = [
         'service_id',
@@ -25,12 +25,14 @@ class Incident extends Model
         'status',
         'resolved_at',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
     {
         return [
             'resolved_at' => 'datetime',
+            'archived_at' => 'datetime',
         ];
     }
 

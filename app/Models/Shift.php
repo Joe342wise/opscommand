@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Shift extends Model
 {
-    use SoftDeletes;
+    use UsesArchivedSoftDeletes;
 
     protected $fillable = [
         'name',
@@ -17,6 +17,7 @@ class Shift extends Model
         'end_time',
         'created_by',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
@@ -24,6 +25,7 @@ class Shift extends Model
         return [
             'start_time' => 'datetime:H:i',
             'end_time' => 'datetime:H:i',
+            'archived_at' => 'datetime',
         ];
     }
 

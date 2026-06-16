@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Personnel extends Model
 {
-    use SoftDeletes;
+    use UsesArchivedSoftDeletes;
 
     protected $table = 'personnel';
 
@@ -22,11 +22,14 @@ class Personnel extends Model
         'status',
         'created_by',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'archived_at' => 'datetime',
+        ];
     }
 
     public function user(): BelongsTo

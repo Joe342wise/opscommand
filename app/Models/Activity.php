@@ -3,14 +3,14 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Activity extends Model
 {
-    use Auditable, SoftDeletes;
+    use Auditable, UsesArchivedSoftDeletes;
 
     protected $fillable = [
         'owner_id',
@@ -22,12 +22,14 @@ class Activity extends Model
         'status',
         'due_at',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
     {
         return [
             'due_at' => 'datetime',
+            'archived_at' => 'datetime',
         ];
     }
 

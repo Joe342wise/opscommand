@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Alert extends Model
 {
+    use UsesArchivedSoftDeletes;
+
     protected $fillable = [
         'title',
         'message',
@@ -16,6 +19,8 @@ class Alert extends Model
         'entity_id',
         'status',
         'created_by',
+        'updated_by',
+        'archived_at',
     ];
 
     public function createdBy(): BelongsTo

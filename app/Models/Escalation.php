@@ -3,22 +3,26 @@
 namespace App\Models;
 
 use App\Traits\Auditable;
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Escalation extends Model
 {
-    use Auditable;
+    use Auditable, UsesArchivedSoftDeletes;
+
     protected $fillable = [
         'activity_id',
         'incident_id',
         'owner_id',
         'target_team_id',
         'created_by',
+        'updated_by',
         'reason',
         'priority',
         'status',
+        'archived_at',
     ];
 
     public function activity(): BelongsTo

@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Report extends Model
 {
+    use UsesArchivedSoftDeletes;
+
     protected $fillable = [
         'title',
         'type',
@@ -16,11 +19,14 @@ class Report extends Model
         'data',
         'status',
         'created_by',
+        'updated_by',
+        'archived_at',
     ];
 
     protected $casts = [
         'parameters' => 'array',
         'data' => 'array',
+        'archived_at' => 'datetime',
     ];
 
     public function createdBy(): BelongsTo

@@ -2,14 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Team extends Model
 {
-    use SoftDeletes;
+    use UsesArchivedSoftDeletes;
 
     protected $fillable = [
         'name',
@@ -17,11 +17,14 @@ class Team extends Model
         'department_id',
         'created_by',
         'updated_by',
+        'archived_at',
     ];
 
     protected function casts(): array
     {
-        return [];
+        return [
+            'archived_at' => 'datetime',
+        ];
     }
 
     public function department(): BelongsTo
