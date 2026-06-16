@@ -3,10 +3,10 @@
     <div class="flex justify-between items-end mb-2">
         <div>
             <h2 class="font-headline-lg text-headline-lg text-on-surface">Notification Center</h2>
-            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Reviewing {{ $alerts->total() + $notifications->total() }} active alerts across operational systems.</p>
+            <p class="font-body-sm text-body-sm text-on-surface-variant opacity-70">Reviewing {{ $alerts->count() + $notifications->total() }} active alerts across operational systems.</p>
         </div>
         <div class="flex gap-2">
-            <form method="POST" action="{{ route('notifications.markAllRead') }}">
+            <form method="POST" action="{{ route('notifications.mark-all-read') }}">
                 @csrf
                 <button type="submit" class="px-4 py-2 border border-outline-variant hover:bg-surface-variant transition-colors flex items-center gap-2 rounded-lg">
                     <span class="material-symbols-outlined text-[18px]">done_all</span>
@@ -28,7 +28,7 @@
                             <span class="material-symbols-outlined text-[18px] text-primary">campaign</span>
                             <span class="font-body-sm text-body-sm {{ !request('type') ? 'text-primary font-bold' : 'text-on-surface-variant group-hover:text-on-surface' }}">All Notifications</span>
                         </div>
-                        <span class="font-mono-data text-mono-data {{ !request('type') ? 'bg-primary text-on-primary px-1.5 rounded' : 'text-on-surface-variant opacity-50' }}">{{ $alerts->total() + $notifications->total() }}</span>
+                        <span class="font-mono-data text-mono-data {{ !request('type') ? 'bg-primary text-on-primary px-1.5 rounded' : 'text-on-surface-variant opacity-50' }}">{{ $alerts->count() + $notifications->total() }}</span>
                     </a>
                     <a href="{{ route('notifications.index', ['type' => 'critical']) }}" class="w-full flex items-center justify-between p-2 rounded hover:bg-surface-variant transition-colors group {{ request('type') === 'critical' ? 'bg-primary/10 border-l-2 border-primary' : '' }}">
                         <div class="flex items-center gap-3 {{ request('type') === 'critical' ? 'text-on-surface' : 'text-on-surface-variant group-hover:text-on-surface' }}">
@@ -156,19 +156,20 @@
                     <div class="flex-1 h-px bg-gradient-to-r from-primary/30 to-transparent ml-2"></div>
                 </div>
                 <div class="space-y-4">
-                    @forelse ($notifications as $notification)
-                        <div class="bg-surface-container border border-outline-variant rounded-lg p-3 flex gap-4 hover:bg-surface-container-high transition-all cursor-pointer {{ $notification->read_at ? 'opacity-70 grayscale-[0.5]' : '' }}">
+                    @forelse ($notifications as $recipient)
+                        @php($notification = $recipient->notification)
+                        <div class="bg-surface-container border border-outline-variant rounded-lg p-3 flex gap-4 hover:bg-surface-container-high transition-all cursor-pointer {{ $recipient->read_at ? 'opacity-70 grayscale-[0.5]' : '' }}">
                             <div class="w-10 h-10 rounded bg-primary/10 flex items-center justify-center shrink-0">
-                                <span class="material-symbols-outlined text-primary">{{ match($notification->type ?? 'info') { 'success' => 'check_circle', 'warning' => 'warning', 'error' => 'error', default => 'info' } }}</span>
+                                <span class="material-symbols-outlined text-primary">{{ match($notification?->category ?? 'info') { 'success' => 'check_circle', 'warning' => 'warning', 'critical' => 'error', default => 'info' } }}</span>
                             </div>
                             <div class="flex-1">
                                 <div class="flex justify-between items-center">
-                                    <h4 class="font-body-md text-body-md font-semibold text-on-surface">{{ $notification->title }}</h4>
-                                    <span class="font-mono-data text-[11px] text-on-surface-variant">{{ $notification->created_at->format('H:i') }}</span>
+                                    <h4 class="font-body-md text-body-md font-semibold text-on-surface">{{ $notification?->title ?? 'Notification unavailable' }}</h4>
+                                    <span class="font-mono-data text-[11px] text-on-surface-variant">{{ $recipient->created_at->format('H:i') }}</span>
                                 </div>
-                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">{{ $notification->message }}</p>
+                                <p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">{{ $notification?->message ?? 'This notification record is no longer available.' }}</p>
                             </div>
-                            @if ($notification->read_at)
+                            @if ($recipient->read_at)
                                 <div class="shrink-0 flex flex-col items-end">
                                     <span class="material-symbols-outlined text-secondary text-[16px]">done_all</span>
                                     <span class="font-label-caps text-[8px] mt-1">READ</span>

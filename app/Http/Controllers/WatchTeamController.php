@@ -8,7 +8,6 @@ use App\Models\Incident;
 use App\Models\Personnel;
 use App\Models\Shift;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class WatchTeamController extends Controller
 {
@@ -21,23 +20,25 @@ class WatchTeamController extends Controller
             ->get();
 
         $personnelWithWorkload = $personnel->map(function ($p) {
-            $p->assigned_activities = Activity::where('owner_id', $p->id)
+            $ownerId = $p->user_id;
+
+            $p->assigned_activities = Activity::where('owner_id', $ownerId)
                 ->whereIn('status', ['pending', 'in_progress'])
                 ->count();
 
-            $p->active_incidents = Incident::where('owner_id', $p->id)
+            $p->active_incidents = Incident::where('owner_id', $ownerId)
                 ->whereIn('status', ['open', 'investigating'])
                 ->count();
 
-            $p->owned_escalations = Escalation::where('owner_id', $p->id)
+            $p->owned_escalations = Escalation::where('owner_id', $ownerId)
                 ->where('status', 'pending')
                 ->count();
 
-            $p->completed_activities = Activity::where('owner_id', $p->id)
+            $p->completed_activities = Activity::where('owner_id', $ownerId)
                 ->where('status', 'completed')
                 ->count();
 
-            $p->total_activities = Activity::where('owner_id', $p->id)
+            $p->total_activities = Activity::where('owner_id', $ownerId)
                 ->count();
 
             return $p;

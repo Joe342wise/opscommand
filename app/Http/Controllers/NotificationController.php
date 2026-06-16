@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Alert;
-use App\Models\Notification;
 use App\Models\NotificationRecipient;
 use Illuminate\Http\Request;
 
@@ -11,12 +10,20 @@ class NotificationController extends Controller
 {
     public function index(Request $request)
     {
+        $alerts = Alert::query()
+            ->when($request->filled('type'), function ($query) use ($request) {
+                $query->where('severity', $request->type);
+            })
+            ->where('status', '!=', 'resolved')
+            ->latest()
+            ->get();
+
         $notifications = NotificationRecipient::with('notification.alert')
             ->where('user_id', auth()->id())
             ->latest()
             ->paginate(20);
 
-        return view('notifications.index', compact('notifications'));
+        return view('notifications.index', compact('alerts', 'notifications'));
     }
 
     public function markAsRead(NotificationRecipient $recipient)

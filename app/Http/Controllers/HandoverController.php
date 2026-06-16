@@ -36,7 +36,7 @@ class HandoverController extends Controller
         $shifts = Shift::orderBy('name')->get();
         $activities = Activity::whereIn('status', ['in_progress', 'pending'])->orderBy('title')->get();
         $incidents = Incident::whereIn('status', ['open', 'investigating'])->orderBy('title')->get();
-        $escalations = Escalation::where('status', 'pending')->orderBy('title')->get();
+        $escalations = Escalation::where('status', 'pending')->latest()->get();
 
         return view('handovers.create', compact('shifts', 'activities', 'incidents', 'escalations'));
     }
