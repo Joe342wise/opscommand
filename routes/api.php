@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\IncidentController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -20,5 +21,9 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('activities', ActivityController::class);
         Route::post('activities/{activity}/remarks', [ActivityController::class, 'addRemark']);
+
+        Route::apiResource('incidents', IncidentController::class);
+        Route::post('incidents/{incident}/notes', [IncidentController::class, 'addNote']);
+        Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve']);
     });
 });
