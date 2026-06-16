@@ -22,22 +22,42 @@ Route::get('/', function () {
 });
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('permission:view_dashboard')
+        ->name('dashboard.index');
 
-    Route::resource('activities', ActivityController::class)->except(['edit', 'update']);
-    Route::put('activities/{activity}', [ActivityController::class, 'update'])->name('activities.update');
-    Route::post('activities/{activity}/remark', [ActivityController::class, 'addRemark'])->name('activities.remark');
+    Route::resource('activities', ActivityController::class)
+        ->except(['edit', 'update'])
+        ->middleware('permission:manage_activities');
+    Route::put('activities/{activity}', [ActivityController::class, 'update'])
+        ->middleware('permission:update_activities')
+        ->name('activities.update');
+    Route::post('activities/{activity}/remark', [ActivityController::class, 'addRemark'])
+        ->middleware('permission:update_activities')
+        ->name('activities.remark');
 
-    Route::resource('incidents', IncidentController::class)->except(['edit']);
-    Route::post('incidents/{incident}/note', [IncidentController::class, 'addNote'])->name('incidents.note');
-    Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve'])->name('incidents.resolve');
+    Route::resource('incidents', IncidentController::class)
+        ->except(['edit'])
+        ->middleware('permission:manage_incidents');
+    Route::post('incidents/{incident}/note', [IncidentController::class, 'addNote'])
+        ->middleware('permission:manage_incidents')
+        ->name('incidents.note');
+    Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve'])
+        ->middleware('permission:manage_incidents')
+        ->name('incidents.resolve');
 
-    Route::resource('escalations', EscalationController::class)->except(['edit']);
+    Route::resource('escalations', EscalationController::class)
+        ->except(['edit'])
+        ->middleware('permission:escalate_incidents');
 
-    Route::resource('handovers', HandoverController::class)->except(['edit', 'destroy']);
-    Route::post('handovers/{handover}/acknowledge', [HandoverController::class, 'acknowledge'])->name('handovers.acknowledge');
+    Route::resource('handovers', HandoverController::class)
+        ->except(['edit', 'destroy'])
+        ->middleware('permission:manage_handovers');
+    Route::post('handovers/{handover}/acknowledge', [HandoverController::class, 'acknowledge'])
+        ->middleware('permission:manage_handovers')
+        ->name('handovers.acknowledge');
 
-    Route::prefix('audit')->name('audit.')->group(function () {
+    Route::prefix('audit')->name('audit.')->middleware('permission:view_audit_logs')->group(function () {
         Route::get('/', [AuditController::class, 'index'])->name('index');
         Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
     });
@@ -51,12 +71,18 @@ Route::middleware('auth')->group(function () {
         Route::post('/alerts/{alert}/resolve', [NotificationController::class, 'resolveAlert'])->name('alerts.resolve');
     });
 
-    Route::resource('services', ServiceController::class)->except(['edit']);
-    Route::post('services/{service}/metric', [ServiceController::class, 'addMetric'])->name('services.metric');
+    Route::resource('services', ServiceController::class)
+        ->except(['edit'])
+        ->middleware('permission:manage_services');
+    Route::post('services/{service}/metric', [ServiceController::class, 'addMetric'])
+        ->middleware('permission:manage_services')
+        ->name('services.metric');
 
-    Route::get('/watch-team', [WatchTeamController::class, 'index'])->name('watch-team.index');
+    Route::get('/watch-team', [WatchTeamController::class, 'index'])
+        ->middleware('permission:view_dashboard')
+        ->name('watch-team.index');
 
-    Route::prefix('reports')->name('reports.')->group(function () {
+    Route::prefix('reports')->name('reports.')->middleware('permission:view_reports')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/create', [ReportController::class, 'create'])->name('create');
         Route::get('/kpis', [ReportController::class, 'kpis'])->name('kpis');
