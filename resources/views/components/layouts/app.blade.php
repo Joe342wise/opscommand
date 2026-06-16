@@ -33,7 +33,7 @@
 <body class="bg-background text-on-surface font-body-md overflow-hidden selection:bg-primary/30">
     @include('layouts.sidebar')
 
-    <header class="docked full-width top-0 sticky z-40 bg-surface border-b border-surface-variant/30 flex justify-between items-center h-14 px-gutter-desktop ml-64">
+    <header class="docked full-width top-0 sticky z-40 bg-surface border-b border-surface-variant/30 flex justify-between items-center h-14 px-6 ml-64">
         <div class="flex items-center gap-6">
             <div class="relative group">
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
@@ -58,7 +58,7 @@
         </div>
     </header>
 
-    <main class="ml-64 p-margin-page h-[calc(100vh-3.5rem)] overflow-y-auto">
+    <main class="ml-64 px-margin-page pt-8 pb-margin-page h-[calc(100vh-3.5rem)] overflow-y-auto">
         <div class="max-w-[1600px] mx-auto space-y-margin-page">
             {{ $slot }}
         </div>

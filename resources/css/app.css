@@ -51,4 +51,18 @@
         background-color: var(--color-background);
         color: var(--color-on-background);
     }
+
+    select option {
+        background-color: var(--color-surface-container-high);
+        color: var(--color-on-surface);
+        padding: 8px 12px;
+    }
+
+    select option:hover,
+    select option:focus,
+    select option:active,
+    select option:checked {
+        background-color: var(--color-primary);
+        color: var(--color-on-primary);
+    }
 }

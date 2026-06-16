@@ -1,4 +1,4 @@
-<header class="docked full-width top-0 sticky z-40 bg-surface border-b border-surface-variant/30 flex justify-between items-center h-14 px-gutter-desktop ml-64">
+<header class="docked full-width top-0 sticky z-40 bg-surface border-b border-surface-variant/30 flex justify-between items-center h-14 px-6 ml-64">
     <div class="flex items-center gap-6">
         <div class="relative group">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
