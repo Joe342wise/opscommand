@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,5 +15,10 @@ Route::prefix('v1')->group(function () {
             Route::post('logout', [AuthController::class, 'logout']);
             Route::post('refresh', [AuthController::class, 'refresh']);
         });
+    });
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::apiResource('activities', ActivityController::class);
+        Route::post('activities/{activity}/remarks', [ActivityController::class, 'addRemark']);
     });
 });

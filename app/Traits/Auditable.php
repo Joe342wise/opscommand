@@ -3,7 +3,6 @@
 namespace App\Traits;
 
 use App\Models\AuditLog;
-use Illuminate\Http\Request;
 
 trait Auditable
 {
@@ -15,9 +14,11 @@ trait Auditable
 
         static::updated(function ($model) {
             $dirty = $model->getDirty();
-            $original = $model->getOriginal($dirty);
+            $original = collect(array_keys($dirty))
+                ->mapWithKeys(fn (string $key) => [$key => $model->getOriginal($key)])
+                ->all();
 
-            if (!empty($dirty)) {
+            if (! empty($dirty)) {
                 static::logAudit($model, 'updated', $original, $dirty);
             }
         });
