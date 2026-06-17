@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Traits\UsesArchivedSoftDeletes;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Service extends Model
@@ -28,5 +29,10 @@ class Service extends Model
     public function slaRecords(): HasMany
     {
         return $this->hasMany(SlaRecord::class);
+    }
+
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

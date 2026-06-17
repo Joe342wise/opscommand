@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\EscalationController;
 use App\Http\Controllers\Api\V1\HandoverController;
 use App\Http\Controllers\Api\V1\IncidentController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\ServiceController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -45,5 +46,9 @@ Route::prefix('v1')->group(function () {
         Route::post('alerts/{alert}/acknowledge', [NotificationController::class, 'acknowledgeAlert']);
         Route::post('alerts/{alert}/resolve', [NotificationController::class, 'resolveAlert']);
         Route::delete('alerts/{alert}', [NotificationController::class, 'destroyAlert']);
+
+        Route::get('services/stats', [ServiceController::class, 'stats']);
+        Route::apiResource('services', ServiceController::class);
+        Route::post('services/{service}/metrics', [ServiceController::class, 'addMetric']);
     });
 });
