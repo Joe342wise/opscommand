@@ -19,6 +19,9 @@ FROM php:8.3-fpm-alpine AS php-build
 RUN apk add --no-cache \
         git \
         unzip \
+        autoconf \
+        g++ \
+        make \
         libpng-dev \
         libjpeg-turbo-dev \
         freetype-dev \
