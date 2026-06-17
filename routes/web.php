@@ -97,11 +97,7 @@ Route::middleware('auth')->group(function () {
         ->middleware('permission:manage_users');
 
     Route::resource('personnel', PersonnelController::class)
-        ->except(['edit', 'update'])
         ->middleware('permission:manage_users');
-    Route::put('personnel/{personnel}', [PersonnelController::class, 'update'])
-        ->middleware('permission:manage_users')
-        ->name('personnel.update');
 
     Route::resource('shifts', ShiftController::class)
         ->middleware('permission:manage_users');
