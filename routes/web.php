@@ -4,6 +4,7 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\AuditController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShiftController;
+use App\Http\Controllers\TeamController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WatchTeamController;
 use Illuminate\Support\Facades\Route;
@@ -96,6 +98,12 @@ Route::middleware('auth')->group(function () {
         ->name('personnel.update');
 
     Route::resource('shifts', ShiftController::class)
+        ->middleware('permission:manage_users');
+
+    Route::resource('departments', DepartmentController::class)
+        ->middleware('permission:manage_users');
+
+    Route::resource('teams', TeamController::class)
         ->middleware('permission:manage_users');
 
     Route::prefix('reports')->name('reports.')->middleware('permission:view_reports')->group(function () {
