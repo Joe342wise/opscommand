@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Concerns\RespondsWithApi;
 use App\Http\Controllers\Controller;
 use App\Models\AuditLog;
+use App\Models\MfaVerification;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -46,11 +47,19 @@ class AuthController extends Controller
         }
 
         if ($user->mfa_enabled) {
+            $verification = MfaVerification::create([
+                'user_id' => $user->id,
+                'secret' => $user->mfa_secret,
+                'code' => Str::random(6),
+                'expires_at' => now()->addMinutes(5),
+            ]);
+
             $this->recordAuthAudit($request, 'api.auth.mfa_required', $user);
 
             return $this->success([
                 'mfa_required' => true,
                 'user_id' => $user->id,
+                'verification_id' => $verification->id,
             ], 'MFA verification is required.', 202);
         }
 
@@ -140,9 +149,49 @@ class AuthController extends Controller
             : $this->error(__($status), ['email' => [__($status)]], 422);
     }
 
-    public function verifyMfa(): JsonResponse
+    public function verifyMfa(Request $request): JsonResponse
     {
-        return $this->error('API MFA verification is not implemented yet.', [], 501);
+        $this->ensureIsNotRateLimited($request, $this->loginThrottleKey($request), 5);
+
+        $validated = $request->validate([
+            'user_id' => ['required', 'integer', 'exists:users,id'],
+            'verification_id' => ['required', 'integer', 'exists:mfa_verifications,id'],
+            'code' => ['required', 'string', 'size:6'],
+            'device_name' => ['nullable', 'string', 'max:100'],
+        ]);
+
+        $verification = MfaVerification::where('id', $validated['verification_id'])
+            ->where('user_id', $validated['user_id'])
+            ->whereNull('complete_at')
+            ->where('expires_at', '>', now())
+            ->first();
+
+        if (! $verification || $verification->code !== $validated['code']) {
+            $user = User::find($validated['user_id']);
+            $this->recordAuthAudit($request, 'api.auth.mfa_failed', $user);
+
+            return $this->error('Invalid or expired verification code.', ['code' => ['The provided code is invalid or has expired.']], 422);
+        }
+
+        $verification->update(['complete_at' => now()]);
+
+        $user = User::findOrFail($validated['user_id']);
+        RateLimiter::clear($this->loginThrottleKey($request));
+        $user->update(['last_login_at' => now()]);
+
+        $token = $user->createToken($validated['device_name'] ?? 'api')->plainTextToken;
+        $this->recordAuthAudit($request, 'api.auth.mfa_success', $user);
+
+        return $this->success([
+            'token' => $token,
+            'token_type' => 'Bearer',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role?->name,
+            ],
+        ], 'MFA verified successfully.');
     }
 
     private function ensureIsNotRateLimited(Request $request, string $key, int $maxAttempts, int $decaySeconds = 60): void
