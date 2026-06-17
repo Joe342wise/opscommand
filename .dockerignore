@@ -1,5 +1,7 @@
 .git
 .env
+.env.production
+.env.local
 node_modules
 vendor
 storage/framework/cache
@@ -7,3 +9,15 @@ storage/framework/sessions
 storage/framework/views
 storage/logs
 public/build
+tests
+.gitignore
+.editorconfig
+.php-cs-fixer.php
+phpunit.xml
+docker-compose.yml
+docker-compose.prod.yml
+Dockerfile
+Dockerfile.prod
+.github
+scripts
+*.md

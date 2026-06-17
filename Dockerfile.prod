@@ -1,0 +1,106 @@
+# Stage 1: Build frontend assets with Node
+FROM node:20-alpine AS frontend-build
+
+WORKDIR /app
+
+COPY package.json package-lock.json* ./
+RUN npm ci --no-audit --no-fund
+
+COPY vite.config.js ./
+COPY resources/css ./resources/css
+COPY resources/js ./resources/js
+COPY public ./public
+
+RUN npm run build
+
+# Stage 2: PHP-FPM with Composer
+FROM php:8.3-fpm-alpine AS php-build
+
+RUN apk add --no-cache \
+        git \
+        unzip \
+        libpng-dev \
+        libjpeg-turbo-dev \
+        freetype-dev \
+        oniguruma-dev \
+        libxml2-dev \
+        zip \
+        unzip \
+        icu-dev \
+        postgresql-dev \
+        libzip-dev \
+        linux-headers \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_pgsql \
+        pgsql \
+        zip \
+        bcmath \
+        mbstring \
+        xml \
+        opcache \
+        intl \
+        pcntl \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/pear
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+# Stage 3: Production image
+FROM php:8.3-fpm-alpine AS production
+
+RUN apk add --no-cache \
+        libpng \
+        libjpeg-turbo \
+        freetype \
+        libzip \
+        icu-libs \
+        postgresql-client \
+        supervisor \
+        nginx \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo_pgsql \
+        pgsql \
+        zip \
+        bcmath \
+        mbstring \
+        xml \
+        opcache \
+        intl \
+        pcntl \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && rm -rf /tmp/pear
+
+COPY --from=php-build /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/html
+
+COPY --from=frontend-build /app/public/build ./public/build
+
+COPY composer.json composer.lock ./
+RUN composer install \
+        --no-dev \
+        --no-scripts \
+        --no-autoloader \
+        --prefer-dist
+
+COPY . .
+
+RUN composer dump-autoload \
+    && composer optimize
+
+RUN chmod -R 775 storage bootstrap/cache \
+    && chown -R www-data:www-data storage bootstrap/cache
+
+RUN cp .env.production .env 2>/dev/null || true
+
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+EXPOSE 9000
+
+CMD ["php-fpm"]

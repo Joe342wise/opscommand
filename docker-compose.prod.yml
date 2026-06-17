@@ -1,0 +1,74 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+      target: production
+    working_dir: /var/www/html
+    restart: unless-stopped
+    env_file: .env.production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - opscommand
+    volumes:
+      - storage-uploads:/var/www/html/storage/app/public
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./docker/nginx/production.conf:/etc/nginx/templates/default.conf.template:ro
+      - storage-uploads:/var/www/html/storage/app/public:ro
+    depends_on:
+      - app
+    networks:
+      - opscommand
+    environment:
+      - APP_DOMAIN=${APP_DOMAIN:-localhost}
+
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-opscommand}
+      POSTGRES_USER: ${DB_USERNAME:-opscommand}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - opscommand
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-opscommand}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - opscommand
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  opscommand:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  storage-uploads:
