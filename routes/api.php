@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EscalationController;
 use App\Http\Controllers\Api\V1\HandoverController;
 use App\Http\Controllers\Api\V1\IncidentController;
+use App\Http\Controllers\Api\V1\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -34,5 +35,15 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('handovers', HandoverController::class);
         Route::post('handovers/{handover}/items', [HandoverController::class, 'addItem']);
         Route::post('handovers/{handover}/acknowledge', [HandoverController::class, 'acknowledge']);
+
+        Route::get('notifications', [NotificationController::class, 'index']);
+        Route::post('notifications/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::post('notifications/{recipient}/read', [NotificationController::class, 'markAsRead']);
+
+        Route::get('alerts', [NotificationController::class, 'alerts']);
+        Route::post('alerts', [NotificationController::class, 'storeAlert']);
+        Route::post('alerts/{alert}/acknowledge', [NotificationController::class, 'acknowledgeAlert']);
+        Route::post('alerts/{alert}/resolve', [NotificationController::class, 'resolveAlert']);
+        Route::delete('alerts/{alert}', [NotificationController::class, 'destroyAlert']);
     });
 });
