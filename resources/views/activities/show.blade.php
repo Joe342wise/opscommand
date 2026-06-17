@@ -99,35 +99,12 @@
             <div class="space-y-6">
                 <div class="bg-surface-container rounded-xl border border-outline-variant p-6">
                     <h2 class="text-sm font-semibold text-on-surface mb-4">Update Status</h2>
-                    <form method="POST" action="{{ route('activities.update', $activity) }}" class="space-y-3">
-                        @csrf
-                        @method('PUT')
-                        <select name="status" required
-                                class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface focus:outline-none focus:ring-1 focus:ring-primary">
-                            <option value="pending" {{ $activity->status === 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="in_progress" {{ $activity->status === 'in_progress' ? 'selected' : '' }}>In Progress</option>
-                            <option value="escalated" {{ $activity->status === 'escalated' ? 'selected' : '' }}>Escalated</option>
-                            <option value="completed" {{ $activity->status === 'completed' ? 'selected' : '' }}>Completed</option>
-                            <option value="cancelled" {{ $activity->status === 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                        <textarea name="update_summary" rows="2" placeholder="Add a note about this change..."
-                                  class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
-                        <button type="submit" class="w-full px-4 py-2 bg-primary-container text-on-primary-container rounded-lg text-sm font-medium hover:opacity-90 transition-opacity">
-                            Update Status
-                        </button>
-                    </form>
+                    <livewire:activity.status-update :activity="$activity" :key="'status-'.$activity->id" />
                 </div>
 
                 <div class="bg-surface-container rounded-xl border border-outline-variant p-6">
                     <h2 class="text-sm font-semibold text-on-surface mb-4">Remarks</h2>
-                    <form method="POST" action="{{ route('activities.remark', $activity) }}" class="space-y-3">
-                        @csrf
-                        <textarea name="remark" rows="3" required placeholder="Add a remark..."
-                                  class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
-                        <button type="submit" class="w-full px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-highest transition-colors">
-                            Add Remark
-                        </button>
-                    </form>
+                    <livewire:activity.remark-form :activityId="$activity->id" :key="'remark-'.$activity->id" />
 
                     <div class="mt-4 space-y-3">
                         @forelse ($activity->remarks as $remark)

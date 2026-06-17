@@ -209,14 +209,7 @@
 
                 <div class="bg-surface-container rounded-xl border border-outline-variant p-6">
                     <h2 class="text-sm font-semibold text-on-surface mb-4">Add Investigation Note</h2>
-                    <form method="POST" action="{{ route('incidents.note', $incident) }}" class="space-y-3">
-                        @csrf
-                        <textarea name="note" rows="3" required placeholder="Add an investigation note..."
-                                  class="w-full px-3 py-2 bg-surface-container-low border border-outline-variant rounded-lg text-sm text-on-surface placeholder:text-outline focus:outline-none focus:ring-1 focus:ring-primary"></textarea>
-                        <button type="submit" class="w-full px-4 py-2 bg-surface-container-high text-on-surface rounded-lg text-sm font-medium hover:bg-surface-container-highest transition-colors">
-                            Add Note
-                        </button>
-                    </form>
+                    <livewire:incident.note-form :incidentId="$incident->id" :key="'note-'.$incident->id" />
                 </div>
             </div>
         </div>

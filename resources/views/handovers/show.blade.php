@@ -15,10 +15,7 @@
                     </form>
                 @endif
                 @if ($handover->status === 'pending')
-                    <form method="POST" action="{{ route('handovers.acknowledge', $handover) }}">
-                        @csrf
-                        <button type="submit" class="px-4 py-2 bg-success-emerald text-background rounded-lg font-medium hover:opacity-90">Acknowledge</button>
-                    </form>
+                    <livewire:handover.acknowledge-button :handover="$handover" :key="'ack-'.$handover->id" />
                 @endif
             </div>
         </div>
