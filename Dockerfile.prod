@@ -14,64 +14,50 @@ COPY public ./public
 RUN npm run build
 
 # Stage 2: PHP with Composer + compiled extensions
-FROM php:8.5-fpm-alpine AS php-build
+FROM php:8.4-fpm-bookworm AS php-build
 
-RUN apk add --no-cache \
+RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         unzip \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libonig-dev \
+        libxml2-dev \
+        libzip-dev \
+        libicu-dev \
+        libpq-dev \
         autoconf \
         g++ \
         make \
-        libpng-dev \
-        libjpeg-turbo-dev \
-        freetype-dev \
-        oniguruma-dev \
-        libxml2-dev \
-        zip \
-        icu-dev \
-        postgresql-dev \
-        libzip-dev \
-        linux-headers
+        linux-headers-amd64 \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install \
-        pdo_pgsql \
-        pgsql \
-        zip \
-        bcmath \
-        mbstring \
-        xml \
-        opcache \
-        intl \
-        pcntl
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg
 
-RUN cd /tmp \
-    && pecl bundle redis \
-    && cd redis \
-    && phpize \
-    && ./configure \
-    && make -j$(nproc) \
-    && make install \
-    && docker-php-ext-enable redis \
-    && rm -rf /tmp/redis
+RUN docker-php-ext-install pdo_pgsql pgsql zip bcmath mbstring xml opcache intl pcntl
+
+RUN pecl install redis && docker-php-ext-enable redis && rm -rf /tmp/pear
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
 # Stage 3: Production image (copies compiled extensions from php-build)
-FROM php:8.5-fpm-alpine AS production
+FROM php:8.4-fpm-bookworm AS production
 
-RUN apk add --no-cache \
-        libpng \
-        libjpeg-turbo \
-        freetype \
-        libzip \
-        icu-libs \
-        icu-dev \
-        postgresql-client \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpng-dev \
+        libjpeg62-turbo-dev \
+        libfreetype6-dev \
+        libzip4 \
+        libicu72 \
+        libpq5 \
+        libonig5 \
         supervisor \
-        nginx
+        nginx \
+        unzip \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY --from=php-build /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
 COPY --from=php-build /usr/local/etc/php/conf.d/ /usr/local/etc/php/conf.d/
