@@ -8,6 +8,7 @@ use App\Models\Incident;
 use App\Models\KpiSnapshot;
 use App\Models\Report;
 use App\Models\ReportExport;
+use App\Services\KpiCalculator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -155,6 +156,14 @@ class ReportController extends Controller
             ->pluck('value', 'kpi_name');
 
         return view('reports.kpis', compact('kpis', 'latestKpis'));
+    }
+
+    public function calculateKpis()
+    {
+        KpiCalculator::calculateAndSnapshot();
+
+        return redirect()->route('reports.kpis')
+            ->with('success', 'KPIs calculated successfully.');
     }
 
     private function generateReportData(string $type, string $dateFrom, string $dateTo): array

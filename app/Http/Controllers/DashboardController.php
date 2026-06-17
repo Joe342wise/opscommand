@@ -6,6 +6,7 @@ use App\Models\Activity;
 use App\Models\Escalation;
 use App\Models\Handover;
 use App\Models\Incident;
+use App\Models\Personnel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,8 +28,8 @@ class DashboardController extends Controller
             'open_escalations' => Escalation::where('status', 'pending')->count(),
             'total_escalations' => Escalation::count(),
             'pending_handovers' => Handover::where('status', 'pending')->count(),
-            'total_personnel' => DB::table('personnel')->where('status', 'active')->count(),
-            'online_personnel' => DB::table('personnel')->where('status', 'active')->limit(6)->get(),
+            'total_personnel' => Personnel::where('status', 'active')->count(),
+            'online_personnel' => Personnel::where('status', 'active')->limit(6)->get(),
         ];
 
         $recentActivities = Activity::with('owner')

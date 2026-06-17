@@ -111,6 +111,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
         Route::get('/create', [ReportController::class, 'create'])->name('create');
         Route::get('/kpis', [ReportController::class, 'kpis'])->name('kpis');
+        Route::post('/kpis/calculate', [ReportController::class, 'calculateKpis'])->name('kpis.calculate');
         Route::post('/', [ReportController::class, 'store'])->name('store');
         Route::get('/{report}', [ReportController::class, 'show'])->name('show');
         Route::get('/{report}/export', [ReportController::class, 'export'])->name('export');
