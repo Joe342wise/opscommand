@@ -1,9 +1,6 @@
 services:
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile.prod
-      target: production
+    image: ${APP_IMAGE:-ghcr.io/nponthutech/opscommand:latest}
     working_dir: /var/www/html
     restart: unless-stopped
     env_file: .env.production
