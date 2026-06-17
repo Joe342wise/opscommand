@@ -31,8 +31,9 @@ RUN apk add --no-cache \
         icu-dev \
         postgresql-dev \
         libzip-dev \
-        linux-headers \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+        linux-headers
+
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo_pgsql \
         pgsql \
@@ -42,10 +43,17 @@ RUN apk add --no-cache \
         xml \
         opcache \
         intl \
-        pcntl \
-    && pecl install redis \
+        pcntl
+
+RUN cd /tmp \
+    && pecl bundle redis \
+    && cd redis \
+    && phpize \
+    && ./configure \
+    && make -j$(nproc) \
+    && make install \
     && docker-php-ext-enable redis \
-    && rm -rf /tmp/pear
+    && rm -rf /tmp/redis
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
