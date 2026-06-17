@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\EscalationController;
 use App\Http\Controllers\Api\V1\HandoverController;
 use App\Http\Controllers\Api\V1\IncidentController;
 use App\Http\Controllers\Api\V1\NotificationController;
+use App\Http\Controllers\Api\V1\ReportController;
 use App\Http\Controllers\Api\V1\ServiceController;
 use Illuminate\Support\Facades\Route;
 
@@ -50,5 +51,8 @@ Route::prefix('v1')->group(function () {
         Route::get('services/stats', [ServiceController::class, 'stats']);
         Route::apiResource('services', ServiceController::class);
         Route::post('services/{service}/metrics', [ServiceController::class, 'addMetric']);
+
+        Route::get('reports/kpis', [ReportController::class, 'kpis']);
+        Route::apiResource('reports', ReportController::class);
     });
 });
