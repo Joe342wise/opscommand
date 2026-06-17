@@ -11,6 +11,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WatchTeamController;
 use Illuminate\Support\Facades\Route;
@@ -93,6 +94,9 @@ Route::middleware('auth')->group(function () {
     Route::put('personnel/{personnel}', [PersonnelController::class, 'update'])
         ->middleware('permission:manage_users')
         ->name('personnel.update');
+
+    Route::resource('shifts', ShiftController::class)
+        ->middleware('permission:manage_users');
 
     Route::prefix('reports')->name('reports.')->middleware('permission:view_reports')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');

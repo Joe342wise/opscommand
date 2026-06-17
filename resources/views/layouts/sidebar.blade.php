@@ -22,6 +22,7 @@
             $adminItems = [
                 ['route' => 'users.index', 'label' => 'User Management', 'icon' => 'manage_accounts', 'permission' => 'manage_users'],
                 ['route' => 'personnel.index', 'label' => 'Personnel', 'icon' => 'badge', 'permission' => 'manage_users'],
+                ['route' => 'shifts.index', 'label' => 'Shifts', 'icon' => 'schedule', 'permission' => 'manage_users'],
             ];
         @endphp
 
