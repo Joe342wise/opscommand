@@ -46,8 +46,6 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   deploy:
     needs: build
@@ -75,23 +73,17 @@ jobs:
             cd ${{ env.DEPLOY_PATH }}
             git pull origin master
 
-            echo ">>> Updating docker-compose to use ghcr image..."
-            sed -i "s|build:.*|image: $IMAGE|g" docker-compose.prod.yml
-            sed -i '/dockerfile:/d' docker-compose.prod.yml
-            sed -i '/target:/d' docker-compose.prod.yml
-            sed -i '/context:/d' docker-compose.prod.yml
-
             echo ">>> Running migrations..."
-            docker compose -f docker-compose.prod.yml run --rm app php artisan migrate --force
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml run --rm app php artisan migrate --force
 
             echo ">>> Caching config..."
-            docker compose -f docker-compose.prod.yml run --rm app php artisan config:cache
-            docker compose -f docker-compose.prod.yml run --rm app php artisan route:cache
-            docker compose -f docker-compose.prod.yml run --rm app php artisan view:cache
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml run --rm app php artisan config:cache
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml run --rm app php artisan route:cache
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml run --rm app php artisan view:cache
 
             echo ">>> Restarting services..."
-            docker compose -f docker-compose.prod.yml down
-            docker compose -f docker-compose.prod.yml up -d --remove-orphans
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml down
+            APP_IMAGE="$IMAGE" docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
             echo ">>> Cleaning up..."
             docker system prune -f
