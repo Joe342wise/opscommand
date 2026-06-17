@@ -11,6 +11,7 @@ use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PersonnelController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\ShiftController;
@@ -67,6 +68,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [AuditController::class, 'index'])->name('index');
         Route::get('/{auditLog}', [AuditController::class, 'show'])->name('show');
     });
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'changePassword'])->name('profile.password');
 
     Route::prefix('notifications')->name('notifications.')->group(function () {
         Route::get('/', [NotificationController::class, 'index'])->name('index');

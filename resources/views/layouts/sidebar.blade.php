@@ -59,7 +59,7 @@
     </nav>
 
     <div class="mt-auto px-6 py-4 border-t border-surface-variant/30">
-        <div class="flex items-center gap-3">
+        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 hover:bg-surface-variant/30 rounded-lg p-2 transition-colors">
             <div class="relative">
                 <div class="w-10 h-10 rounded-full border border-surface-variant shadow-lg bg-primary-container flex items-center justify-center text-on-primary-container font-semibold">
                     {{ strtoupper(substr(auth()->user()->name ?? 'U', 0, 2)) }}
@@ -70,6 +70,6 @@
                 <p class="font-body-sm font-semibold truncate text-on-surface">{{ auth()->user()->name ?? 'User' }}</p>
                 <p class="font-label-caps text-[10px] text-on-surface-variant truncate">{{ auth()->user()->role->name ?? 'Watch Commander' }}</p>
             </div>
-        </div>
+        </a>
     </div>
 </aside>
