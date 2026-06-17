@@ -112,6 +112,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/kpis', [ReportController::class, 'kpis'])->name('kpis');
         Route::post('/', [ReportController::class, 'store'])->name('store');
         Route::get('/{report}', [ReportController::class, 'show'])->name('show');
+        Route::get('/{report}/export', [ReportController::class, 'export'])->name('export');
     });
 });
 

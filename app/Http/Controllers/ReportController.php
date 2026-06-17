@@ -7,8 +7,10 @@ use App\Models\Escalation;
 use App\Models\Incident;
 use App\Models\KpiSnapshot;
 use App\Models\Report;
+use App\Models\ReportExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ReportController extends Controller
 {
@@ -64,6 +66,82 @@ class ReportController extends Controller
         $report->load('createdBy', 'exports');
 
         return view('reports.show', compact('report'));
+    }
+
+    public function export(Report $report, Request $request)
+    {
+        $format = $request->get('format', 'csv');
+
+        $export = ReportExport::create([
+            'report_id' => $report->id,
+            'format' => $format,
+            'status' => 'completed',
+            'path' => "reports/{$report->id}/{$report->title}.{$format}",
+            'created_by' => auth()->id(),
+        ]);
+
+        if ($format === 'csv') {
+            return $this->exportCsv($report);
+        }
+
+        return redirect()->route('reports.show', $report)
+            ->with('success', 'Export completed successfully.');
+    }
+
+    private function exportCsv(Report $report): StreamedResponse
+    {
+        $data = $report->data;
+        $type = $report->type;
+
+        return response()->streamDownload(function () use ($data, $type, $report) {
+            $handle = fopen('php://output', 'w');
+
+            fputcsv($handle, ['Report: ' . $report->title]);
+            fputcsv($handle, ['Type: ' . $type]);
+            fputcsv($handle, ['Generated: ' . $report->created_at->format('M d, Y H:i')]);
+            fputcsv($handle, []);
+
+            if ($type === 'activity') {
+                fputcsv($handle, ['Status', 'Count']);
+                foreach (['total', 'completed', 'pending', 'in_progress'] as $key) {
+                    fputcsv($handle, [ucfirst(str_replace('_', ' ', $key)), $data[$key] ?? 0]);
+                }
+                fputcsv($handle, []);
+                fputcsv($handle, ['Priority', 'Count']);
+                foreach ($data['by_priority'] ?? [] as $priority => $count) {
+                    fputcsv($handle, [ucfirst($priority), $count]);
+                }
+            } elseif ($type === 'incident') {
+                fputcsv($handle, ['Status', 'Count']);
+                foreach (['total', 'open', 'resolved'] as $key) {
+                    fputcsv($handle, [ucfirst($key), $data[$key] ?? 0]);
+                }
+                fputcsv($handle, []);
+                fputcsv($handle, ['Severity', 'Count']);
+                foreach ($data['by_severity'] ?? [] as $severity => $count) {
+                    fputcsv($handle, [$severity, $count]);
+                }
+            } elseif ($type === 'escalation') {
+                fputcsv($handle, ['Status', 'Count']);
+                foreach (['total', 'pending', 'resolved'] as $key) {
+                    fputcsv($handle, [ucfirst($key), $data[$key] ?? 0]);
+                }
+                fputcsv($handle, []);
+                fputcsv($handle, ['Priority', 'Count']);
+                foreach ($data['by_priority'] ?? [] as $priority => $count) {
+                    fputcsv($handle, [ucfirst($priority), $count]);
+                }
+            } elseif ($type === 'summary') {
+                fputcsv($handle, ['Metric', 'Count']);
+                foreach ($data as $key => $value) {
+                    fputcsv($handle, [ucfirst($key), $value]);
+                }
+            }
+
+            fclose($handle);
+        }, "{$report->title}.csv", [
+            'Content-Type' => 'text/csv',
+        ]);
     }
 
     public function kpis()
