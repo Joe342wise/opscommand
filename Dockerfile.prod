@@ -68,6 +68,7 @@ RUN apk add --no-cache \
         libzip-dev \
         icu-dev \
         postgresql-dev \
+        oniguruma-dev \
         linux-headers \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
