@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\ActivityController;
+use App\Http\Controllers\Api\V1\AuditController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\EscalationController;
 use App\Http\Controllers\Api\V1\HandoverController;
@@ -54,5 +55,9 @@ Route::prefix('v1')->group(function () {
 
         Route::get('reports/kpis', [ReportController::class, 'kpis']);
         Route::apiResource('reports', ReportController::class);
+
+        Route::get('audit-logs/history', [AuditController::class, 'history']);
+        Route::get('audit-logs', [AuditController::class, 'index']);
+        Route::get('audit-logs/{auditLog}', [AuditController::class, 'show']);
     });
 });
