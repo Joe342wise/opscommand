@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\EscalationController;
+use App\Http\Controllers\Api\V1\HandoverController;
 use App\Http\Controllers\Api\V1\IncidentController;
 use Illuminate\Support\Facades\Route;
 
@@ -25,5 +27,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('incidents', IncidentController::class);
         Route::post('incidents/{incident}/notes', [IncidentController::class, 'addNote']);
         Route::post('incidents/{incident}/resolve', [IncidentController::class, 'resolve']);
+
+        Route::apiResource('escalations', EscalationController::class);
+        Route::post('escalations/{escalation}/close', [EscalationController::class, 'close']);
+
+        Route::apiResource('handovers', HandoverController::class);
+        Route::post('handovers/{handover}/items', [HandoverController::class, 'addItem']);
+        Route::post('handovers/{handover}/acknowledge', [HandoverController::class, 'acknowledge']);
     });
 });
