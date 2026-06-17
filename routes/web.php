@@ -8,6 +8,7 @@ use App\Http\Controllers\EscalationController;
 use App\Http\Controllers\HandoverController;
 use App\Http\Controllers\IncidentController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PersonnelController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\UserController;
@@ -85,6 +86,13 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('users', UserController::class)
         ->middleware('permission:manage_users');
+
+    Route::resource('personnel', PersonnelController::class)
+        ->except(['edit', 'update'])
+        ->middleware('permission:manage_users');
+    Route::put('personnel/{personnel}', [PersonnelController::class, 'update'])
+        ->middleware('permission:manage_users')
+        ->name('personnel.update');
 
     Route::prefix('reports')->name('reports.')->middleware('permission:view_reports')->group(function () {
         Route::get('/', [ReportController::class, 'index'])->name('index');
