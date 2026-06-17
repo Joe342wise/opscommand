@@ -18,6 +18,10 @@
                 ['route' => 'services.index', 'label' => 'System Health', 'icon' => 'analytics'],
                 ['route' => 'watch-team.index', 'label' => 'Watch Team', 'icon' => 'groups'],
             ];
+
+            $adminItems = [
+                ['route' => 'users.index', 'label' => 'User Management', 'icon' => 'manage_accounts', 'permission' => 'manage_users'],
+            ];
         @endphp
 
         @foreach ($navItems as $item)
@@ -30,6 +34,24 @@
                 <span class="font-body-sm text-body-sm">{{ $item['label'] }}</span>
             </a>
         @endforeach
+
+        @if (auth()->user()?->hasAnyPermission(['manage_users']))
+            <div class="pt-2 mt-2 border-t border-surface-variant/30">
+                <p class="px-3 py-1 text-[10px] font-label-caps text-on-surface-variant uppercase tracking-widest">Administration</p>
+                @foreach ($adminItems as $item)
+                    @if (auth()->user()?->hasPermission($item['permission']))
+                        <a href="{{ route($item['route']) }}"
+                           class="flex items-center gap-3 px-3 py-2.5 transition-all rounded-sm group
+                                  {{ request()->routeIs($item['route']) ? 'text-primary font-bold border-r-2 border-primary bg-primary/5' : 'text-on-surface-variant font-medium hover:bg-surface-variant hover:text-on-surface' }}">
+                            <span class="material-symbols-outlined {{ request()->routeIs($item['route']) ? 'fill-icon' : 'group-hover:scale-110 transition-transform' }}"
+                                  @if(request()->routeIs($item['route'])) style="font-variation-settings: 'FILL' 1;" @endif>
+                                {{ $item['icon'] }}</span>
+                            <span class="font-body-sm text-body-sm">{{ $item['label'] }}</span>
+                        </a>
+                    @endif
+                @endforeach
+            </div>
+        @endif
     </nav>
 
     <div class="mt-auto px-6 py-4 border-t border-surface-variant/30">
