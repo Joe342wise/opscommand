@@ -76,11 +76,13 @@ RUN composer install \
 
 COPY . .
 
+# Set CACHE_STORE to array for build-time before running composer commands
+# This prevents Laravel from trying to connect to Redis during the build
+ENV CACHE_STORE=array
+
 RUN mkdir -p storage/framework/{cache,sessions,testing,views} \
     && mkdir -p storage/logs \
     && mkdir -p bootstrap/cache
-
-ENV CACHE_STORE=array
 
 RUN composer dump-autoload \
     && composer optimize
