@@ -34,11 +34,24 @@ class HandoverController extends Controller
     public function create()
     {
         $shifts = Shift::orderBy('name')->get();
-        $activities = Activity::whereIn('status', ['in_progress', 'pending'])->orderBy('title')->get();
-        $incidents = Incident::whereIn('status', ['open', 'investigating'])->orderBy('title')->get();
-        $escalations = Escalation::where('status', 'pending')->latest()->get();
+        $activities = Activity::whereIn('status', ['in_progress', 'pending'])
+            ->orderByRaw("CASE priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END")
+            ->get();
+        $incidents = Incident::whereIn('status', ['open', 'investigating'])
+            ->orderByRaw("CASE severity WHEN 'P1' THEN 0 WHEN 'P2' THEN 1 WHEN 'P3' THEN 2 ELSE 3 END")
+            ->get();
+        $escalations = Escalation::where('status', 'pending')
+            ->orderByRaw("CASE priority WHEN 'critical' THEN 0 WHEN 'high' THEN 1 WHEN 'medium' THEN 2 ELSE 3 END")
+            ->get();
 
-        return view('handovers.create', compact('shifts', 'activities', 'incidents', 'escalations'));
+        $autoSelectedActivities = $activities->filter(fn ($a) => in_array($a->priority, ['critical', 'high']))->pluck('id')->toArray();
+        $autoSelectedIncidents = $incidents->filter(fn ($i) => in_array($i->severity, ['P1', 'P2']))->pluck('id')->toArray();
+        $autoSelectedEscalations = $escalations->filter(fn ($e) => in_array($e->priority, ['critical', 'high']))->pluck('id')->toArray();
+
+        return view('handovers.create', compact(
+            'shifts', 'activities', 'incidents', 'escalations',
+            'autoSelectedActivities', 'autoSelectedIncidents', 'autoSelectedEscalations'
+        ));
     }
 
     public function store(Request $request)

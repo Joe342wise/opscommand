@@ -42,11 +42,12 @@
 
             @if ($activities->count() > 0)
                 <div class="bg-surface-container rounded-xl p-4 border border-outline-variant">
-                    <h2 class="text-lg font-medium text-on-surface mb-4">Activities to Hand Over</h2>
+                    <h2 class="text-lg font-medium text-on-surface mb-2">Activities to Hand Over</h2>
+                    <p class="text-xs text-on-surface-variant mb-4">Critical and high-priority activities are pre-selected.</p>
                     <div class="space-y-2">
                         @foreach ($activities as $activity)
                             <label class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary/50 cursor-pointer">
-                                <input type="checkbox" name="activities[]" value="{{ $activity->id }}" class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
+                                <input type="checkbox" name="activities[]" value="{{ $activity->id }}" {{ in_array($activity->id, $autoSelectedActivities ?? []) ? 'checked' : '' }} class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-on-surface">{{ $activity->title }}</p>
                                     <p class="text-xs text-surface-bright">Priority: {{ ucfirst($activity->priority) }} • Status: {{ ucfirst(str_replace('_', ' ', $activity->status)) }}</p>
@@ -59,11 +60,12 @@
 
             @if ($incidents->count() > 0)
                 <div class="bg-surface-container rounded-xl p-4 border border-outline-variant">
-                    <h2 class="text-lg font-medium text-on-surface mb-4">Incidents to Hand Over</h2>
+                    <h2 class="text-lg font-medium text-on-surface mb-2">Incidents to Hand Over</h2>
+                    <p class="text-xs text-on-surface-variant mb-4">P1 and P2 incidents are pre-selected.</p>
                     <div class="space-y-2">
                         @foreach ($incidents as $incident)
                             <label class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary/50 cursor-pointer">
-                                <input type="checkbox" name="incidents[]" value="{{ $incident->id }}" class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
+                                <input type="checkbox" name="incidents[]" value="{{ $incident->id }}" {{ in_array($incident->id, $autoSelectedIncidents ?? []) ? 'checked' : '' }} class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
                                 <div class="flex-1">
                                     <p class="text-sm font-medium text-on-surface">{{ $incident->title }}</p>
                                     <p class="text-xs text-surface-bright">Severity: {{ $incident->severity }} • Status: {{ ucfirst($incident->status) }}</p>
@@ -76,13 +78,14 @@
 
             @if ($escalations->count() > 0)
                 <div class="bg-surface-container rounded-xl p-4 border border-outline-variant">
-                    <h2 class="text-lg font-medium text-on-surface mb-4">Escalations to Hand Over</h2>
+                    <h2 class="text-lg font-medium text-on-surface mb-2">Escalations to Hand Over</h2>
+                    <p class="text-xs text-on-surface-variant mb-4">Critical and high-priority escalations are pre-selected.</p>
                     <div class="space-y-2">
                         @foreach ($escalations as $escalation)
                             <label class="flex items-center gap-3 p-3 bg-surface-container-low rounded-lg border border-outline-variant hover:border-primary/50 cursor-pointer">
-                                <input type="checkbox" name="escalations[]" value="{{ $escalation->id }}" class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
+                                <input type="checkbox" name="escalations[]" value="{{ $escalation->id }}" {{ in_array($escalation->id, $autoSelectedEscalations ?? []) ? 'checked' : '' }} class="rounded bg-surface-container-high border-outline-variant text-primary focus:ring-primary">
                                 <div class="flex-1">
-                                    <p class="text-sm font-medium text-on-surface">{{ $escalation->title }}</p>
+                                    <p class="text-sm font-medium text-on-surface">{{ $escalation->title ?? 'Escalation #' . $escalation->id }}</p>
                                     <p class="text-xs text-surface-bright">Priority: {{ ucfirst($escalation->priority) }} • Team: {{ $escalation->targetTeam->name ?? 'N/A' }}</p>
                                 </div>
                             </label>
