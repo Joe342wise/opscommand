@@ -6,6 +6,7 @@ use App\Models\Incident;
 use App\Models\IncidentUpdate;
 use App\Models\InvestigationNote;
 use App\Models\ResolutionRecord;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class IncidentController extends Controller
@@ -56,6 +57,8 @@ class IncidentController extends Controller
 
         $incident = Incident::create($validated);
 
+        NotificationService::notifyIncidentCreated($incident->id, $incident->title, $incident->owner_id);
+
         return redirect()->route('incidents.show', $incident)
             ->with('success', 'Incident created successfully.');
     }
@@ -90,6 +93,15 @@ class IncidentController extends Controller
             if ($validated['status'] === 'resolved' && ! $incident->resolved_at) {
                 $validated['resolved_at'] = now();
             }
+
+            NotificationService::notifyUsers(
+                [$incident->owner_id],
+                'Incident Status Updated',
+                "Incident '{$incident->title}' status changed to {$validated['status']}.",
+                in_array($validated['status'], ['resolved', 'closed']) ? 'info' : 'warning',
+                'Incident',
+                $incident->id
+            );
         }
 
         $validated['updated_by'] = auth()->id();

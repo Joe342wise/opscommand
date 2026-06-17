@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Service;
 use App\Models\SlaRecord;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ServiceController extends Controller
@@ -65,7 +66,20 @@ class ServiceController extends Controller
             'status' => 'required|in:healthy,warning,critical',
         ]);
 
+        $previousStatus = $service->status;
         $service->update($validated);
+
+        if ($validated['status'] === 'critical' && $previousStatus !== 'critical') {
+            NotificationService::notifyServiceCritical($service->id, $service->name);
+            NotificationService::createAlert(
+                'Service Critical',
+                "Service '{$service->name}' status changed to CRITICAL",
+                'critical',
+                'Service',
+                $service->id,
+                auth()->id()
+            );
+        }
 
         return redirect()->route('services.show', $service)
             ->with('success', 'Service status updated successfully.');

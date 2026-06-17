@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\ActivityRemark;
 use App\Models\ActivityUpdate;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -56,6 +57,8 @@ class ActivityController extends Controller
 
         $activity = Activity::create($validated);
 
+        NotificationService::notifyActivityAssigned($activity->id, $activity->title, $activity->owner_id);
+
         return redirect()->route('activities.show', $activity)
             ->with('success', 'Activity created successfully.');
     }
@@ -87,6 +90,26 @@ class ActivityController extends Controller
                 'new_status' => $validated['status'],
                 'summary' => $request->get('update_summary'),
             ]);
+
+            if ($validated['status'] === 'escalated') {
+                NotificationService::notifyUsers(
+                    \App\Models\User::where('status', 'active')->pluck('id')->toArray(),
+                    'Activity Escalated',
+                    "Activity '{$activity->title}' has been escalated.",
+                    'warning',
+                    'Activity',
+                    $activity->id
+                );
+            }
+        }
+
+        if (isset($validated['owner_id']) && $validated['owner_id'] !== $activity->owner_id) {
+            NotificationService::notifyActivityReassigned(
+                $activity->id,
+                $activity->title,
+                $activity->owner_id,
+                $validated['owner_id']
+            );
         }
 
         $validated['updated_by'] = auth()->id();

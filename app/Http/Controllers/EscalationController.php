@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Escalation;
 use App\Models\EscalationHistory;
 use App\Models\Team;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class EscalationController extends Controller
@@ -58,6 +59,8 @@ class EscalationController extends Controller
         $validated['status'] = 'pending';
 
         $escalation = Escalation::create($validated);
+
+        NotificationService::notifyEscalationCreated($escalation->id, $escalation->target_team_id, $escalation->reason);
 
         return redirect()->route('escalations.show', $escalation)
             ->with('success', 'Escalation created successfully.');
