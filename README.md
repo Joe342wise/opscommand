@@ -1,58 +1,166 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<p align="center"><strong>OpsCommand</strong></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## OpsCommand — Application Support Operations Management Platform
 
-## About Laravel
+OpsCommand is an enterprise-grade operations management platform built for Application Support teams. It centralizes incident tracking, activity management, escalations, handovers, service health monitoring, and team coordination into a single dark-themed command center.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Features
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Dashboard** — Real-time operational overview with KPI metrics, charts, and activity summaries
+- **Activity Management** — Create, assign, track, and escalate activities with priority levels and status workflows
+- **Incident Management** — Track incidents with severity levels (P1–P4), investigation notes, resolution records, and linked activities
+- **Escalation Management** — Escalate activities/incidents to teams with full history tracking
+- **Handover Management** — Shift-based handovers with auto-populated critical items and acknowledgement tracking
+- **Service Health Monitoring** — Monitor services with health states (Healthy/Warning/Critical), SLA records, and alerts
+- **Watch Team** — Real-time view of on-duty personnel and shift schedules
+- **Reporting & Analytics** — Generate reports with configurable date ranges, CSV export, and KPI snapshots
+- **Notification Center** — Real-time notifications with critical/warning/info categories and poll-based updates
+- **User Management** — RBAC with roles (Admin, Ops Manager, Team Lead, Support Personnel) and permissions
+- **Personnel & Team Management** — Departments, teams, personnel profiles, and shift assignments
+- **Audit & History** — Full audit trail of all operational actions with historical records
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Tech Stack
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 11, PHP 8.3+ |
+| Database | PostgreSQL |
+| Frontend | Blade + Livewire |
+| CSS | Tailwind CSS v4 |
+| JavaScript | Alpine.js |
+| Icons | Material Symbols Outlined |
+| Charts | ApexCharts |
+| Auth | Laravel Sanctum |
+| Realtime | Livewire polling (15s–30s) |
+| Queue | Laravel Queues (database driver) |
+| Deployment | Docker Compose + Nginx + Supervisor |
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## Requirements
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- PHP 8.3+
+- PostgreSQL 16+
+- Node.js 20+
+- Composer
+- Docker & Docker Compose (for deployment)
+
+---
+
+## Local Development
 
 ```bash
-composer require laravel/boost --dev
+# Clone the repository
+git clone <repo-url>
+cd opscommand
 
-php artisan boost:install
+# Install PHP dependencies
+composer install
+
+# Install Node dependencies
+npm install
+
+# Copy environment file
+cp .env .env.example
+php artisan key:generate
+
+# Configure database in .env
+DB_CONNECTION=pgsql
+DB_HOST=127.0.0.1
+DB_PORT=5432
+DB_DATABASE=opscommand
+DB_USERNAME=postgres
+DB_PASSWORD=secret
+
+# Run migrations and seed
+php artisan migrate --seed
+
+# Build frontend assets
+npm run build
+
+# Start the development server
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Or use Docker Compose:
 
-## Contributing
+```bash
+docker compose up -d
+docker compose run --rm app php artisan migrate --seed
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## Deployment
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### Prerequisites
+- DigitalOcean VPS (or any VPS with Docker)
+- Domain pointing to VPS IP
+- GitHub repository
 
-## Security Vulnerabilities
+### Server Setup (One-Time)
+```bash
+ssh root@YOUR_VPS_IP
+bash /opt/opscommand/scripts/setup-server.sh
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Environment
+Edit `.env.production` with your database credentials, app key, and domain.
+
+### GitHub Actions
+Add these secrets in GitHub → Settings → Secrets:
+- `SERVER_HOST` — VPS IP address
+- `SERVER_USER` — SSH username
+- `SERVER_SSH_KEY` — Private SSH key
+- `SERVER_PORT` — SSH port (default: 22)
+
+Push to `master` to trigger automatic deployment.
+
+### Manual Deploy
+```bash
+ssh root@YOUR_VPS_IP
+cd /opt/opscommand
+bash scripts/deploy.sh
+```
+
+---
+
+## Default Credentials
+
+| Email | Password | Role |
+|---|---|---|
+| nanayawosei429@gmail.com | admin342 | Administrator |
+
+---
+
+## Project Structure
+
+```
+opscommand/
+├── app/
+│   ├── Http/Controllers/    # Web + API controllers
+│   ├── Livewire/            # Livewire components
+│   ├── Models/              # Eloquent models
+│   ├── Policies/            # Authorization policies
+│   └── Services/            # Business logic services
+├── database/migrations/     # Database migrations
+├── resources/
+│   ├── views/               # Blade templates
+│   ├── css/                 # Tailwind CSS
+│   └── js/                  # Alpine.js + ApexCharts
+├── tests/Feature/           # Feature tests
+├── docker/                  # Docker configs
+├── Dockerfile.prod          # Production Docker build
+├── docker-compose.prod.yml  # Production compose
+└── scripts/                 # Deployment scripts
+```
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proprietary — Npontu Technologies
